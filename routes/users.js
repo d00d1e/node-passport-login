@@ -17,7 +17,7 @@ router.get('/register', (req, res) => {
 })
 
 // register handle
-router.post('/register', (req, res) => {
+router.post('/register', async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
   let errors = [];
 
@@ -45,7 +45,7 @@ router.post('/register', (req, res) => {
       confirmPassword
     });
   } else {
-    User.findOne({ email: email })
+    await User.findOne({ email: email })
       .then(user => {
         if(user) {
           errors.push({ msg: 'Email is already registered' });
