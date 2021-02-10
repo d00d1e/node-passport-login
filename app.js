@@ -28,7 +28,7 @@ app.set('view engine', 'ejs');
 // express bodyparser
 app.use(express.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 // express session
 app.set('trust proxy', 1) // trust first proxy
