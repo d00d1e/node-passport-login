@@ -57,5 +57,5 @@ app.use('/users', require('./routes/users.js'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server started in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server started on port ${PORT}`);
 });
