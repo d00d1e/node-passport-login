@@ -3,32 +3,29 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-const express = require('express');
-const path = require('path');
-const expressLayouts = require('express-ejs-layouts');
-const mongoose = require('mongoose');
-const flash = require('connect-flash');
-const session = require('express-session');
-const passport = require('passport');
+const express         = require('express');
+const expressLayouts  = require('express-ejs-layouts');
+const connectMongoDB  = require('./config/db');
+const session         = require('express-session');
+const flash           = require('connect-flash');
+const passport        = require('passport');
+const morgan          = require('morgan');
 
 const app = express();
+connectMongoDB();
 
-//passport config
-require('./config/passport')(passport);
+//morgan
+if (process.env.NODE_ENV) {
+  app.use(morgan('dev'));
+}
 
-//MongoDB config
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("MongoDB connected"))
-  .catch(e => console.log(e));
+app.use(express.urlencoded({ extended: false })); // express bodyparser
+app.use(express.static('public'));
+app.use(flash()); // connect-flash
 
-//EJS
+// templating
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
-
-// express bodyparser
-app.use(express.urlencoded({ extended: false }));
-
-app.use(express.static('public'));
 
 // express session
 app.set('trust proxy', 1) // trust first proxy
@@ -38,11 +35,11 @@ app.use(session({
   saveUninitialized: true
 }));
 
+//passport config
+require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// connect-flash
-app.use(flash());
 
 // global variables
 app.use((req, res, next) => {
@@ -60,5 +57,5 @@ app.use('/users', require('./routes/users.js'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(`Server started in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
